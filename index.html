@@ -164,26 +164,9 @@ const MASTER_KEY = '$2a$10$E1vCw/97uICDU4TE22871O3ny7mC5n30kyDUJ72PfwjEm.lLBTauu
 
 let inscritos = [];
 let ganhadores = [];
-let binId = null;
+let binId = '6a2aa703da38895dfead281b';
 
-async function init() {
-  // Recupera binId salvo ou cria um novo
-  const saved = localStorage.getItem('simposio_bin');
-  if (saved) {
-    binId = saved;
-  } else {
-    try {
-      const res = await fetch(`${JSONBIN_BASE}/b`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY, 'X-Bin-Name': 'simposio-inscritos', 'X-Bin-Private': 'false' },
-        body: JSON.stringify({ inscritos: [] })
-      });
-      const data = await res.json();
-      binId = data.metadata.id;
-      localStorage.setItem('simposio_bin', binId);
-    } catch(e) { console.error('Erro ao criar bin', e); }
-  }
-
+function init() {
   const hash = window.location.hash.replace('#', '');
   if (hash === SENHA_ADMIN) {
     abrirAdmin();
