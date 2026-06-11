@@ -4,34 +4,36 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sorteio — Simpósio</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f7f7f5;
-    --surface: #ffffff;
-    --border: #e2e2de;
-    --text: #1a1a18;
-    --muted: #6b6b67;
-    --accent: #1d6b45;
-    --accent-light: #eaf3de;
-    --accent-text: #27500a;
-    --warning: #854f0b;
-    --warning-light: #faeeda;
-    --danger: #a32d2d;
-    --radius: 12px;
-    --radius-sm: 8px;
+    --bg: #f7f7f5; --surface: #ffffff; --border: #e2e2de;
+    --text: #1a1a18; --muted: #6b6b67;
+    --accent: #1d6b45; --accent-light: #eaf3de; --accent-text: #27500a;
+    --warning: #854f0b; --danger: #a32d2d;
+    --radius: 12px; --radius-sm: 8px;
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
+  /* SETUP */
+  #page-setup { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
+  .setup-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 2rem 1.5rem; width: 100%; max-width: 420px; }
+  .setup-card h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; }
+  .setup-card p { font-size: 14px; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; }
+  .step { background: var(--bg); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 10px; }
+  .step-num { font-size: 11px; font-weight: 500; color: var(--accent-text); background: var(--accent-light); padding: 2px 8px; border-radius: 100px; margin-bottom: 6px; display: inline-block; }
+  .step p { margin-bottom: 8px; font-size: 13px; }
+  .step a { color: var(--accent); font-weight: 500; }
+  .step code { background: #e8e8e4; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
   /* CADASTRO */
-  #page-cadastro { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
+  #page-cadastro { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
   .cadastro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 2rem 1.5rem; width: 100%; max-width: 400px; text-align: center; }
   .logo-pill { display: inline-block; background: var(--accent-light); color: var(--accent-text); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 100px; margin-bottom: 1.25rem; }
   .cadastro-card h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.5rem; }
-  .cadastro-card p.subtitle { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.5; }
+  .cadastro-card .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.5; }
   .success-state { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 1rem 0; }
-  .checkmark { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .checkmark { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto; }
 
   /* ADMIN */
   #page-admin { display: none; max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
@@ -64,21 +66,24 @@
   .msg.success { color: var(--accent); }
   .msg.error { color: var(--danger); }
   .msg.warn { color: var(--warning); }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* INPUTS */
-  input[type="text"], input[type="number"] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; margin-bottom: 10px; display: block; }
-  input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); background: var(--surface); }
-  input[type="number"] { width: 64px; font-size: 14px; margin-bottom: 0; }
+  input[type="text"], input[type="password"] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; margin-bottom: 10px; display: block; }
+  input[type="text"]:focus, input[type="password"]:focus { border-color: var(--accent); background: var(--surface); }
+  input[type="number"] { padding: 8px 10px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; width: 64px; background: var(--bg); color: var(--text); outline: none; }
+  input[type="number"]:focus { border-color: var(--accent); background: var(--surface); }
 
-  /* BUTTONS */
   .btn-primary { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
   .btn-primary:hover { opacity: 0.9; }
-  .btn-sortear { padding: 11px 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-sortear { padding: 11px 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; }
   .btn-sortear:hover { opacity: 0.9; }
   .btn-ghost { padding: 10px 16px; background: none; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; cursor: pointer; color: var(--muted); transition: background 0.15s; }
   .btn-ghost:hover { background: var(--bg); }
-  .btn-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 2px; transition: color 0.15s; }
+  .btn-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 2px; }
   .btn-remove:hover { color: var(--danger); }
+
+  .loading { text-align: center; padding: 2rem; color: var(--muted); font-size: 14px; }
 
   @media (max-width: 480px) {
     .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -88,7 +93,33 @@
 </head>
 <body>
 
-<!-- PÁGINA DE CADASTRO -->
+<!-- SETUP: configurar JSONBin -->
+<div id="page-setup">
+  <div class="setup-card">
+    <h1>⚙️ Configuração inicial</h1>
+    <p>Para sincronizar inscrições em tempo real entre os celulares, precisamos de um banco de dados gratuito. Siga os passos abaixo uma única vez:</p>
+
+    <div class="step">
+      <span class="step-num">Passo 1</span>
+      <p>Acesse <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> e crie uma conta gratuita.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-num">Passo 2</span>
+      <p>Após login, clique em <strong>API Keys</strong> no menu e copie sua <strong>Master Key</strong> (começa com <code>$2b$...</code>).</p>
+    </div>
+
+    <div class="step">
+      <span class="step-num">Passo 3</span>
+      <p>Cole aqui e clique em Iniciar:</p>
+      <input type="password" id="api-key-input" placeholder="$2b$10$..." />
+      <button class="btn-primary" onclick="iniciarSetup()">Iniciar sorteio</button>
+      <p class="msg" id="msg-setup"></p>
+    </div>
+  </div>
+</div>
+
+<!-- CADASTRO -->
 <div id="page-cadastro">
   <div class="cadastro-card">
     <span class="logo-pill">🎁 Sorteio do Simpósio</span>
@@ -96,7 +127,7 @@
     <p class="subtitle">Informe seu nome para concorrer aos brindes. Boa sorte!</p>
     <div id="form-state">
       <input type="text" id="nome-input" placeholder="Seu nome completo" autocomplete="off" autocorrect="off" />
-      <button class="btn-primary" onclick="cadastrar()">Quero participar</button>
+      <button class="btn-primary" id="btn-cadastrar" onclick="cadastrar()">Quero participar</button>
       <p class="msg" id="msg-cadastro"></p>
     </div>
     <div class="success-state" id="success-state">
@@ -108,10 +139,11 @@
   </div>
 </div>
 
-<!-- PÁGINA DO ORGANIZADOR -->
+<!-- ADMIN -->
 <div id="page-admin">
   <div class="admin-header">
     <h1>Painel do organizador</h1>
+    <span style="font-size:12px;color:var(--muted);"><span class="sync-dot"></span>Sincronizado</span>
   </div>
 
   <div class="stats-grid">
@@ -129,7 +161,7 @@
   <div id="tab-sorteio" class="tab-content active">
     <div class="card">
       <p class="card-title">Realizar sorteio</p>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Serão sorteadas até 20 pessoas, sem duplicatas, de forma aleatória.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Serão sorteadas até 20 pessoas sem duplicatas.</p>
       <div class="row-actions">
         <label style="font-size:13px;color:var(--muted);">Quantidade:</label>
         <input type="number" id="qtd-sorteio" value="20" min="1" max="20" />
@@ -154,7 +186,7 @@
         <button class="btn-ghost" onclick="limparTudo()" style="font-size:12px;padding:6px 12px;color:var(--danger);">Limpar tudo</button>
       </div>
       <div class="scroll-list" id="lista-inscritos">
-        <p style="font-size:13px;color:var(--muted);">Nenhum inscrito ainda.</p>
+        <p class="loading">Carregando...</p>
       </div>
     </div>
   </div>
@@ -172,41 +204,124 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+const SENHA_ADMIN = 'Momenta2026';
+const BASE_URL = 'https://ricardochiavatta-lab.github.io/simposiomomentaganepao/';
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+
 let inscritos = [];
 let ganhadores = [];
-const SENHA = 'Momenta2026';
+let binId = null;
+let apiKey = null;
+let polling = null;
 
-// Verifica hash na URL para abrir admin
-function verificarRota() {
+// ---- ROTEAMENTO ----
+function init() {
+  const stored = localStorage.getItem('simposio_config');
+  if (stored) {
+    const cfg = JSON.parse(stored);
+    apiKey = cfg.apiKey;
+    binId = cfg.binId;
+  }
+
   const hash = window.location.hash.replace('#', '');
-  if (hash === SENHA) {
+  if (hash === SENHA_ADMIN) {
+    if (!apiKey || !binId) { mostrarSetup(); return; }
     abrirAdmin();
+  } else {
+    if (!apiKey || !binId) { mostrarSetup(); return; }
+    document.getElementById('page-cadastro').style.display = 'flex';
   }
 }
 
-window.addEventListener('hashchange', verificarRota);
+window.addEventListener('hashchange', init);
 
-// CADASTRO
-function cadastrar() {
+// ---- SETUP ----
+function mostrarSetup() {
+  document.getElementById('page-setup').style.display = 'flex';
+}
+
+async function iniciarSetup() {
+  const key = document.getElementById('api-key-input').value.trim();
+  const msg = document.getElementById('msg-setup');
+  if (!key.startsWith('$2b$')) { msg.className='msg error'; msg.textContent='Chave inválida. Começa com $2b$...'; return; }
+
+  msg.className='msg'; msg.textContent='Criando banco de dados...';
+
+  try {
+    const res = await fetch(`${JSONBIN_BASE}/b`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Name': 'simposio-inscritos', 'X-Bin-Private': 'false' },
+      body: JSON.stringify({ inscritos: [] })
+    });
+    const data = await res.json();
+    if (!data.metadata?.id) throw new Error('Erro ao criar bin');
+
+    apiKey = key;
+    binId = data.metadata.id;
+    localStorage.setItem('simposio_config', JSON.stringify({ apiKey, binId }));
+
+    msg.className='msg success'; msg.textContent='Pronto! Redirecionando...';
+    setTimeout(() => {
+      document.getElementById('page-setup').style.display = 'none';
+      const hash = window.location.hash.replace('#', '');
+      if (hash === SENHA_ADMIN) abrirAdmin();
+      else document.getElementById('page-cadastro').style.display = 'flex';
+    }, 800);
+  } catch(e) {
+    msg.className='msg error'; msg.textContent='Erro: ' + e.message;
+  }
+}
+
+// ---- API JSONBIN ----
+async function lerDados() {
+  const res = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, {
+    headers: { 'X-Master-Key': apiKey }
+  });
+  const data = await res.json();
+  return data.record?.inscritos || [];
+}
+
+async function salvarDados(lista) {
+  await fetch(`${JSONBIN_BASE}/b/${binId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+    body: JSON.stringify({ inscritos: lista })
+  });
+}
+
+// ---- CADASTRO ----
+async function cadastrar() {
   const nome = document.getElementById('nome-input').value.trim();
   const msg = document.getElementById('msg-cadastro');
+  const btn = document.getElementById('btn-cadastrar');
+
   if (!nome) { msg.className='msg error'; msg.textContent='Por favor, informe seu nome.'; return; }
-  if (inscritos.find(i => i.nome.toLowerCase() === nome.toLowerCase())) {
-    msg.className='msg warn'; msg.textContent='Este nome já está inscrito!'; return;
+
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  msg.className='msg'; msg.textContent='';
+
+  try {
+    const lista = await lerDados();
+    if (lista.find(i => i.nome.toLowerCase() === nome.toLowerCase())) {
+      msg.className='msg warn'; msg.textContent='Este nome já está inscrito!';
+      btn.disabled = false; btn.textContent = 'Quero participar'; return;
+    }
+    lista.push({ nome, id: Date.now() });
+    await salvarDados(lista);
+    document.getElementById('form-state').style.display = 'none';
+    document.getElementById('success-state').style.display = 'flex';
+  } catch(e) {
+    msg.className='msg error'; msg.textContent='Erro ao salvar. Tente novamente.';
   }
-  inscritos.push({ nome, id: Date.now() });
-  salvar();
-  document.getElementById('form-state').style.display = 'none';
-  document.getElementById('success-state').style.display = 'flex';
-  atualizarStats();
-  renderInscritos();
+
+  btn.disabled = false; btn.textContent = 'Quero participar';
 }
 
 function resetForm() {
   document.getElementById('nome-input').value = '';
   document.getElementById('msg-cadastro').textContent = '';
-  document.getElementById('msg-cadastro').className = 'msg';
   document.getElementById('form-state').style.display = 'block';
   document.getElementById('success-state').style.display = 'none';
 }
@@ -215,13 +330,22 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.activeElement.id === 'nome-input') cadastrar();
 });
 
-// ADMIN
+// ---- ADMIN ----
 function abrirAdmin() {
   document.getElementById('page-cadastro').style.display = 'none';
+  document.getElementById('page-setup').style.display = 'none';
   document.getElementById('page-admin').style.display = 'block';
-  atualizarStats();
-  renderInscritos();
+  carregarInscritos();
+  polling = setInterval(carregarInscritos, 5000);
   setTimeout(gerarQRAdmin, 100);
+}
+
+async function carregarInscritos() {
+  try {
+    inscritos = await lerDados();
+    renderInscritos();
+    atualizarStats();
+  } catch(e) {}
 }
 
 function switchTab(name, btn) {
@@ -248,21 +372,23 @@ function renderInscritos() {
     </div>`).join('');
 }
 
-function remover(id) {
+async function remover(id) {
   inscritos = inscritos.filter(i => i.id !== id);
-  salvar(); renderInscritos(); atualizarStats();
+  await salvarDados(inscritos);
+  renderInscritos(); atualizarStats();
 }
 
-function limparTudo() {
+async function limparTudo() {
   if (!inscritos.length) return;
   if (confirm('Remover todos os inscritos?')) {
     inscritos = []; ganhadores = [];
-    salvar(); renderInscritos(); atualizarStats();
+    await salvarDados([]);
+    renderInscritos(); atualizarStats();
     document.getElementById('resultado-container').style.display = 'none';
   }
 }
 
-// SORTEIO
+// ---- SORTEIO ----
 function sortear() {
   const qtd = Math.min(parseInt(document.getElementById('qtd-sorteio').value) || 20, 20);
   const msg = document.getElementById('msg-sorteio');
@@ -295,30 +421,19 @@ function copiarGanhadores() {
   navigator.clipboard.writeText(texto).catch(() => prompt('Copie a lista:', texto));
 }
 
-// QR CODE
+// ---- QR CODE ----
 function gerarQRAdmin() {
-  const url = window.location.href.split('#')[0];
   const el = document.getElementById('qr-canvas-admin');
   el.innerHTML = '';
-  document.getElementById('qr-url-text').textContent = url;
-  new QRCode(el, { text: url, width: 180, height: 180, colorDark: '#1a1a18', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  document.getElementById('qr-url-text').textContent = BASE_URL;
+  new QRCode(el, { text: BASE_URL, width: 180, height: 180, colorDark: '#1a1a18', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
 }
 
 function copiarURL() {
-  const url = window.location.href.split('#')[0];
-  navigator.clipboard.writeText(url).catch(() => prompt('Copie o link:', url));
+  navigator.clipboard.writeText(BASE_URL).catch(() => prompt('Copie o link:', BASE_URL));
 }
 
-// PERSISTÊNCIA
-function salvar() {
-  try { localStorage.setItem('simposio_inscritos', JSON.stringify(inscritos)); } catch(e) {}
-}
-function carregar() {
-  try { const d = localStorage.getItem('simposio_inscritos'); if (d) inscritos = JSON.parse(d); } catch(e) {}
-}
-
-carregar();
-verificarRota();
+init();
 </script>
 </body>
 </html>
