@@ -112,7 +112,7 @@
     <div class="step">
       <span class="step-num">Passo 3</span>
       <p>Cole aqui e clique em Iniciar:</p>
-      <input type="password" id="api-key-input" placeholder="$2b$10$..." />
+      <input type="password" id="api-key-input" placeholder="$2a$10$..." />
       <button class="btn-primary" onclick="iniciarSetup()">Iniciar sorteio</button>
       <p class="msg" id="msg-setup"></p>
     </div>
@@ -245,7 +245,7 @@ function mostrarSetup() {
 async function iniciarSetup() {
   const key = document.getElementById('api-key-input').value.trim();
   const msg = document.getElementById('msg-setup');
-  if (!key.startsWith('$2b$')) { msg.className='msg error'; msg.textContent='Chave inválida. Começa com $2b$...'; return; }
+  if (!key.startsWith('$2')) { msg.className='msg error'; msg.textContent='Chave inválida. Deve começar com $2...'; return; }
 
   msg.className='msg'; msg.textContent='Criando banco de dados...';
 
