@@ -15,19 +15,7 @@
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* SETUP */
-  #page-setup { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
-  .setup-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 2rem 1.5rem; width: 100%; max-width: 420px; }
-  .setup-card h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; }
-  .setup-card p { font-size: 14px; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; }
-  .step { background: var(--bg); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 10px; }
-  .step-num { font-size: 11px; font-weight: 500; color: var(--accent-text); background: var(--accent-light); padding: 2px 8px; border-radius: 100px; margin-bottom: 6px; display: inline-block; }
-  .step p { margin-bottom: 8px; font-size: 13px; }
-  .step a { color: var(--accent); font-weight: 500; }
-  .step code { background: #e8e8e4; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: monospace; }
-
-  /* CADASTRO */
-  #page-cadastro { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
+  #page-cadastro { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
   .cadastro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 2rem 1.5rem; width: 100%; max-width: 400px; text-align: center; }
   .logo-pill { display: inline-block; background: var(--accent-light); color: var(--accent-text); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 100px; margin-bottom: 1.25rem; }
   .cadastro-card h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.5rem; }
@@ -35,7 +23,6 @@
   .success-state { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 1rem 0; }
   .checkmark { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto; }
 
-  /* ADMIN */
   #page-admin { display: none; max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
   .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
   .admin-header h1 { font-size: 20px; font-weight: 500; }
@@ -69,21 +56,18 @@
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  input[type="text"], input[type="password"] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; margin-bottom: 10px; display: block; }
-  input[type="text"]:focus, input[type="password"]:focus { border-color: var(--accent); background: var(--surface); }
+  input[type="text"] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; margin-bottom: 10px; display: block; }
+  input[type="text"]:focus { border-color: var(--accent); background: var(--surface); }
   input[type="number"] { padding: 8px 10px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; width: 64px; background: var(--bg); color: var(--text); outline: none; }
   input[type="number"]:focus { border-color: var(--accent); background: var(--surface); }
 
   .btn-primary { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
   .btn-primary:hover { opacity: 0.9; }
   .btn-sortear { padding: 11px 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; }
-  .btn-sortear:hover { opacity: 0.9; }
   .btn-ghost { padding: 10px 16px; background: none; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; cursor: pointer; color: var(--muted); transition: background 0.15s; }
   .btn-ghost:hover { background: var(--bg); }
   .btn-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 2px; }
   .btn-remove:hover { color: var(--danger); }
-
-  .loading { text-align: center; padding: 2rem; color: var(--muted); font-size: 14px; }
 
   @media (max-width: 480px) {
     .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -93,33 +77,6 @@
 </head>
 <body>
 
-<!-- SETUP: configurar JSONBin -->
-<div id="page-setup">
-  <div class="setup-card">
-    <h1>⚙️ Configuração inicial</h1>
-    <p>Para sincronizar inscrições em tempo real entre os celulares, precisamos de um banco de dados gratuito. Siga os passos abaixo uma única vez:</p>
-
-    <div class="step">
-      <span class="step-num">Passo 1</span>
-      <p>Acesse <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> e crie uma conta gratuita.</p>
-    </div>
-
-    <div class="step">
-      <span class="step-num">Passo 2</span>
-      <p>Após login, clique em <strong>API Keys</strong> no menu e copie sua <strong>Master Key</strong> (começa com <code>$2b$...</code>).</p>
-    </div>
-
-    <div class="step">
-      <span class="step-num">Passo 3</span>
-      <p>Cole aqui e clique em Iniciar:</p>
-      <input type="password" id="api-key-input" placeholder="$2a$10$..." />
-      <button class="btn-primary" onclick="iniciarSetup()">Iniciar sorteio</button>
-      <p class="msg" id="msg-setup"></p>
-    </div>
-  </div>
-</div>
-
-<!-- CADASTRO -->
 <div id="page-cadastro">
   <div class="cadastro-card">
     <span class="logo-pill">🎁 Sorteio do Simpósio</span>
@@ -139,25 +96,21 @@
   </div>
 </div>
 
-<!-- ADMIN -->
 <div id="page-admin">
   <div class="admin-header">
     <h1>Painel do organizador</h1>
     <span style="font-size:12px;color:var(--muted);"><span class="sync-dot"></span>Sincronizado</span>
   </div>
-
   <div class="stats-grid">
     <div class="stat-card"><p class="stat-label">Inscritos</p><p class="stat-value" id="stat-total">0</p></div>
     <div class="stat-card"><p class="stat-label">Sorteados</p><p class="stat-value" id="stat-sorteados">0</p></div>
     <div class="stat-card"><p class="stat-label">Brindes</p><p class="stat-value green">20</p></div>
   </div>
-
   <div class="tab-row">
     <button class="tab-btn active" onclick="switchTab('sorteio',this)">Sorteio</button>
     <button class="tab-btn" onclick="switchTab('inscritos',this)">Inscritos</button>
     <button class="tab-btn" onclick="switchTab('qr',this)">QR code</button>
   </div>
-
   <div id="tab-sorteio" class="tab-content active">
     <div class="card">
       <p class="card-title">Realizar sorteio</p>
@@ -178,7 +131,6 @@
       <div id="lista-ganhadores"></div>
     </div>
   </div>
-
   <div id="tab-inscritos" class="tab-content">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -186,11 +138,10 @@
         <button class="btn-ghost" onclick="limparTudo()" style="font-size:12px;padding:6px 12px;color:var(--danger);">Limpar tudo</button>
       </div>
       <div class="scroll-list" id="lista-inscritos">
-        <p class="loading">Carregando...</p>
+        <p style="font-size:13px;color:var(--muted);">Nenhum inscrito ainda.</p>
       </div>
     </div>
   </div>
-
   <div id="tab-qr" class="tab-content">
     <div class="card">
       <p class="card-title">QR code para os participantes</p>
@@ -209,76 +160,45 @@
 const SENHA_ADMIN = 'Momenta2026';
 const BASE_URL = 'https://ricardochiavatta-lab.github.io/simposiomomentaganepao/';
 const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+const MASTER_KEY = '$2a$10$E1vCw/97uICDU4TE22871O3ny7mC5n30kyDUJ72PfwjEm.lLBTauu';
 
 let inscritos = [];
 let ganhadores = [];
 let binId = null;
-let apiKey = null;
-let polling = null;
 
-// ---- ROTEAMENTO ----
-function init() {
-  const stored = localStorage.getItem('simposio_config');
-  if (stored) {
-    const cfg = JSON.parse(stored);
-    apiKey = cfg.apiKey;
-    binId = cfg.binId;
+async function init() {
+  // Recupera binId salvo ou cria um novo
+  const saved = localStorage.getItem('simposio_bin');
+  if (saved) {
+    binId = saved;
+  } else {
+    try {
+      const res = await fetch(`${JSONBIN_BASE}/b`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY, 'X-Bin-Name': 'simposio-inscritos', 'X-Bin-Private': 'false' },
+        body: JSON.stringify({ inscritos: [] })
+      });
+      const data = await res.json();
+      binId = data.metadata.id;
+      localStorage.setItem('simposio_bin', binId);
+    } catch(e) { console.error('Erro ao criar bin', e); }
   }
 
   const hash = window.location.hash.replace('#', '');
   if (hash === SENHA_ADMIN) {
-    if (!apiKey || !binId) { mostrarSetup(); return; }
     abrirAdmin();
   } else {
-    if (!apiKey || !binId) { mostrarSetup(); return; }
     document.getElementById('page-cadastro').style.display = 'flex';
   }
 }
 
-window.addEventListener('hashchange', init);
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '');
+  if (hash === SENHA_ADMIN) abrirAdmin();
+});
 
-// ---- SETUP ----
-function mostrarSetup() {
-  document.getElementById('page-setup').style.display = 'flex';
-}
-
-async function iniciarSetup() {
-  const key = document.getElementById('api-key-input').value.trim();
-  const msg = document.getElementById('msg-setup');
-  if (!key.startsWith('$2')) { msg.className='msg error'; msg.textContent='Chave inválida. Deve começar com $2...'; return; }
-
-  msg.className='msg'; msg.textContent='Criando banco de dados...';
-
-  try {
-    const res = await fetch(`${JSONBIN_BASE}/b`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Name': 'simposio-inscritos', 'X-Bin-Private': 'false' },
-      body: JSON.stringify({ inscritos: [] })
-    });
-    const data = await res.json();
-    if (!data.metadata?.id) throw new Error('Erro ao criar bin');
-
-    apiKey = key;
-    binId = data.metadata.id;
-    localStorage.setItem('simposio_config', JSON.stringify({ apiKey, binId }));
-
-    msg.className='msg success'; msg.textContent='Pronto! Redirecionando...';
-    setTimeout(() => {
-      document.getElementById('page-setup').style.display = 'none';
-      const hash = window.location.hash.replace('#', '');
-      if (hash === SENHA_ADMIN) abrirAdmin();
-      else document.getElementById('page-cadastro').style.display = 'flex';
-    }, 800);
-  } catch(e) {
-    msg.className='msg error'; msg.textContent='Erro: ' + e.message;
-  }
-}
-
-// ---- API JSONBIN ----
 async function lerDados() {
-  const res = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, {
-    headers: { 'X-Master-Key': apiKey }
-  });
+  const res = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, { headers: { 'X-Master-Key': MASTER_KEY } });
   const data = await res.json();
   return data.record?.inscritos || [];
 }
@@ -286,22 +206,17 @@ async function lerDados() {
 async function salvarDados(lista) {
   await fetch(`${JSONBIN_BASE}/b/${binId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY },
     body: JSON.stringify({ inscritos: lista })
   });
 }
 
-// ---- CADASTRO ----
 async function cadastrar() {
   const nome = document.getElementById('nome-input').value.trim();
   const msg = document.getElementById('msg-cadastro');
   const btn = document.getElementById('btn-cadastrar');
-
   if (!nome) { msg.className='msg error'; msg.textContent='Por favor, informe seu nome.'; return; }
-
   btn.disabled = true; btn.textContent = 'Salvando...';
-  msg.className='msg'; msg.textContent='';
-
   try {
     const lista = await lerDados();
     if (lista.find(i => i.nome.toLowerCase() === nome.toLowerCase())) {
@@ -315,7 +230,6 @@ async function cadastrar() {
   } catch(e) {
     msg.className='msg error'; msg.textContent='Erro ao salvar. Tente novamente.';
   }
-
   btn.disabled = false; btn.textContent = 'Quero participar';
 }
 
@@ -330,22 +244,16 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.activeElement.id === 'nome-input') cadastrar();
 });
 
-// ---- ADMIN ----
 function abrirAdmin() {
   document.getElementById('page-cadastro').style.display = 'none';
-  document.getElementById('page-setup').style.display = 'none';
   document.getElementById('page-admin').style.display = 'block';
   carregarInscritos();
-  polling = setInterval(carregarInscritos, 5000);
+  setInterval(carregarInscritos, 5000);
   setTimeout(gerarQRAdmin, 100);
 }
 
 async function carregarInscritos() {
-  try {
-    inscritos = await lerDados();
-    renderInscritos();
-    atualizarStats();
-  } catch(e) {}
+  try { inscritos = await lerDados(); renderInscritos(); atualizarStats(); } catch(e) {}
 }
 
 function switchTab(name, btn) {
@@ -374,21 +282,18 @@ function renderInscritos() {
 
 async function remover(id) {
   inscritos = inscritos.filter(i => i.id !== id);
-  await salvarDados(inscritos);
-  renderInscritos(); atualizarStats();
+  await salvarDados(inscritos); renderInscritos(); atualizarStats();
 }
 
 async function limparTudo() {
   if (!inscritos.length) return;
   if (confirm('Remover todos os inscritos?')) {
     inscritos = []; ganhadores = [];
-    await salvarDados([]);
-    renderInscritos(); atualizarStats();
+    await salvarDados([]); renderInscritos(); atualizarStats();
     document.getElementById('resultado-container').style.display = 'none';
   }
 }
 
-// ---- SORTEIO ----
 function sortear() {
   const qtd = Math.min(parseInt(document.getElementById('qtd-sorteio').value) || 20, 20);
   const msg = document.getElementById('msg-sorteio');
@@ -421,7 +326,6 @@ function copiarGanhadores() {
   navigator.clipboard.writeText(texto).catch(() => prompt('Copie a lista:', texto));
 }
 
-// ---- QR CODE ----
 function gerarQRAdmin() {
   const el = document.getElementById('qr-canvas-admin');
   el.innerHTML = '';
