@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sorteio — Simpósio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e2e2de;
+    --text: #1a1a18;
+    --muted: #6b6b67;
+    --accent: #1d6b45;
+    --accent-light: #eaf3de;
+    --accent-text: #27500a;
+    --warning: #854f0b;
+    --warning-light: #faeeda;
+    --danger: #a32d2d;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* CADASTRO */
+  #page-cadastro { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; }
+  .cadastro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 2rem 1.5rem; width: 100%; max-width: 400px; text-align: center; }
+  .logo-pill { display: inline-block; background: var(--accent-light); color: var(--accent-text); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 100px; margin-bottom: 1.25rem; }
+  .cadastro-card h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.5rem; }
+  .cadastro-card p.subtitle { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.5; }
+  .success-state { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 1rem 0; }
+  .checkmark { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+  /* ADMIN */
+  #page-admin { display: none; max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .admin-header h1 { font-size: 20px; font-weight: 500; }
+  .tab-row { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 1.5rem; }
+  .tab-btn { padding: 10px 18px; border: none; background: none; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+  .card-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 1rem; }
+  .stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; text-align: center; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-size: 28px; font-weight: 500; }
+  .stat-value.green { color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .inscrito-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 5px; }
+  .inscrito-num { font-size: 12px; color: var(--muted); min-width: 22px; }
+  .inscrito-nome { font-size: 13px; font-weight: 500; flex: 1; }
+  .ganhador-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--accent-light); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .ganhador-pos { font-size: 13px; font-weight: 500; color: var(--warning); min-width: 28px; }
+  .ganhador-nome { font-size: 14px; font-weight: 500; flex: 1; color: var(--accent-text); }
+  .qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .url-label { font-size: 12px; color: var(--muted); word-break: break-all; text-align: center; max-width: 320px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 100px; background: var(--accent-light); color: var(--accent-text); margin-left: 6px; font-weight: 500; }
+  .scroll-list { max-height: 240px; overflow-y: auto; }
+  .row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .msg { font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .msg.success { color: var(--accent); }
+  .msg.error { color: var(--danger); }
+  .msg.warn { color: var(--warning); }
+
+  /* INPUTS */
+  input[type="text"], input[type="number"] { width: 100%; padding: 12px 14px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; margin-bottom: 10px; display: block; }
+  input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); background: var(--surface); }
+  input[type="number"] { width: 64px; font-size: 14px; margin-bottom: 0; }
+
+  /* BUTTONS */
+  .btn-primary { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-sortear { padding: 11px 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+  .btn-sortear:hover { opacity: 0.9; }
+  .btn-ghost { padding: 10px 16px; background: none; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; cursor: pointer; color: var(--muted); transition: background 0.15s; }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 2px; transition: color 0.15s; }
+  .btn-remove:hover { color: var(--danger); }
+
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .stat-card:last-child { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PÁGINA DE CADASTRO -->
+<div id="page-cadastro">
+  <div class="cadastro-card">
+    <span class="logo-pill">🎁 Sorteio do Simpósio</span>
+    <h1>Participar do sorteio</h1>
+    <p class="subtitle">Informe seu nome para concorrer aos brindes. Boa sorte!</p>
+    <div id="form-state">
+      <input type="text" id="nome-input" placeholder="Seu nome completo" autocomplete="off" autocorrect="off" />
+      <button class="btn-primary" onclick="cadastrar()">Quero participar</button>
+      <p class="msg" id="msg-cadastro"></p>
+    </div>
+    <div class="success-state" id="success-state">
+      <div class="checkmark">✓</div>
+      <p style="font-size:17px;font-weight:500;">Inscrição confirmada!</p>
+      <p style="font-size:14px;color:var(--muted);">Você está na lista. Boa sorte no sorteio!</p>
+      <button class="btn-ghost" onclick="resetForm()" style="margin-top:8px;font-size:13px;padding:8px 16px;">Cadastrar outro participante</button>
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA DO ORGANIZADOR -->
+<div id="page-admin">
+  <div class="admin-header">
+    <h1>Painel do organizador</h1>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><p class="stat-label">Inscritos</p><p class="stat-value" id="stat-total">0</p></div>
+    <div class="stat-card"><p class="stat-label">Sorteados</p><p class="stat-value" id="stat-sorteados">0</p></div>
+    <div class="stat-card"><p class="stat-label">Brindes</p><p class="stat-value green">20</p></div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('sorteio',this)">Sorteio</button>
+    <button class="tab-btn" onclick="switchTab('inscritos',this)">Inscritos</button>
+    <button class="tab-btn" onclick="switchTab('qr',this)">QR code</button>
+  </div>
+
+  <div id="tab-sorteio" class="tab-content active">
+    <div class="card">
+      <p class="card-title">Realizar sorteio</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Serão sorteadas até 20 pessoas, sem duplicatas, de forma aleatória.</p>
+      <div class="row-actions">
+        <label style="font-size:13px;color:var(--muted);">Quantidade:</label>
+        <input type="number" id="qtd-sorteio" value="20" min="1" max="20" />
+        <button class="btn-sortear" onclick="sortear()">🎲 Sortear agora</button>
+        <button class="btn-ghost" onclick="resetarSorteio()">↺ Resetar</button>
+      </div>
+      <p class="msg" id="msg-sorteio"></p>
+    </div>
+    <div class="card" id="resultado-container" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <p class="card-title" style="margin-bottom:0;">🏆 Ganhadores</p>
+        <button class="btn-ghost" onclick="copiarGanhadores()" style="font-size:12px;padding:6px 12px;">Copiar lista</button>
+      </div>
+      <div id="lista-ganhadores"></div>
+    </div>
+  </div>
+
+  <div id="tab-inscritos" class="tab-content">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <p class="card-title" style="margin-bottom:0;">Lista de inscritos <span class="badge" id="badge-count">0</span></p>
+        <button class="btn-ghost" onclick="limparTudo()" style="font-size:12px;padding:6px 12px;color:var(--danger);">Limpar tudo</button>
+      </div>
+      <div class="scroll-list" id="lista-inscritos">
+        <p style="font-size:13px;color:var(--muted);">Nenhum inscrito ainda.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-qr" class="tab-content">
+    <div class="card">
+      <p class="card-title">QR code para os participantes</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Projete no telão para que os participantes escaneiem.</p>
+      <div class="qr-wrap">
+        <div id="qr-canvas-admin"></div>
+        <p class="url-label" id="qr-url-text"></p>
+        <button class="btn-ghost" onclick="copiarURL()" style="font-size:13px;">Copiar link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let inscritos = [];
+let ganhadores = [];
+const SENHA = 'Momenta2026';
+
+// Verifica hash na URL para abrir admin
+function verificarRota() {
+  const hash = window.location.hash.replace('#', '');
+  if (hash === SENHA) {
+    abrirAdmin();
+  }
+}
+
+window.addEventListener('hashchange', verificarRota);
+
+// CADASTRO
+function cadastrar() {
+  const nome = document.getElementById('nome-input').value.trim();
+  const msg = document.getElementById('msg-cadastro');
+  if (!nome) { msg.className='msg error'; msg.textContent='Por favor, informe seu nome.'; return; }
+  if (inscritos.find(i => i.nome.toLowerCase() === nome.toLowerCase())) {
+    msg.className='msg warn'; msg.textContent='Este nome já está inscrito!'; return;
+  }
+  inscritos.push({ nome, id: Date.now() });
+  salvar();
+  document.getElementById('form-state').style.display = 'none';
+  document.getElementById('success-state').style.display = 'flex';
+  atualizarStats();
+  renderInscritos();
+}
+
+function resetForm() {
+  document.getElementById('nome-input').value = '';
+  document.getElementById('msg-cadastro').textContent = '';
+  document.getElementById('msg-cadastro').className = 'msg';
+  document.getElementById('form-state').style.display = 'block';
+  document.getElementById('success-state').style.display = 'none';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement.id === 'nome-input') cadastrar();
+});
+
+// ADMIN
+function abrirAdmin() {
+  document.getElementById('page-cadastro').style.display = 'none';
+  document.getElementById('page-admin').style.display = 'block';
+  atualizarStats();
+  renderInscritos();
+  setTimeout(gerarQRAdmin, 100);
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function atualizarStats() {
+  document.getElementById('stat-total').textContent = inscritos.length;
+  document.getElementById('stat-sorteados').textContent = ganhadores.length;
+  document.getElementById('badge-count').textContent = inscritos.length;
+}
+
+function renderInscritos() {
+  const cont = document.getElementById('lista-inscritos');
+  if (!inscritos.length) { cont.innerHTML='<p style="font-size:13px;color:var(--muted);">Nenhum inscrito ainda.</p>'; return; }
+  cont.innerHTML = inscritos.map((p,i) => `
+    <div class="inscrito-row">
+      <span class="inscrito-num">${i+1}</span>
+      <span class="inscrito-nome">${p.nome}</span>
+      <button class="btn-remove" onclick="remover(${p.id})">×</button>
+    </div>`).join('');
+}
+
+function remover(id) {
+  inscritos = inscritos.filter(i => i.id !== id);
+  salvar(); renderInscritos(); atualizarStats();
+}
+
+function limparTudo() {
+  if (!inscritos.length) return;
+  if (confirm('Remover todos os inscritos?')) {
+    inscritos = []; ganhadores = [];
+    salvar(); renderInscritos(); atualizarStats();
+    document.getElementById('resultado-container').style.display = 'none';
+  }
+}
+
+// SORTEIO
+function sortear() {
+  const qtd = Math.min(parseInt(document.getElementById('qtd-sorteio').value) || 20, 20);
+  const msg = document.getElementById('msg-sorteio');
+  if (!inscritos.length) { msg.className='msg error'; msg.textContent='Nenhum inscrito disponível.'; return; }
+  const pool = [...inscritos];
+  for (let i = pool.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  ganhadores = pool.slice(0, Math.min(qtd, pool.length));
+  atualizarStats();
+  document.getElementById('lista-ganhadores').innerHTML = ganhadores.map((g,i) => `
+    <div class="ganhador-row">
+      <span class="ganhador-pos">#${i+1}</span>
+      <span class="ganhador-nome">${g.nome}</span>
+      <span style="font-size:16px;">🎁</span>
+    </div>`).join('');
+  document.getElementById('resultado-container').style.display = 'block';
+  msg.className='msg success'; msg.textContent=`${ganhadores.length} ganhadores sorteados!`;
+}
+
+function resetarSorteio() {
+  ganhadores = []; atualizarStats();
+  document.getElementById('resultado-container').style.display = 'none';
+  document.getElementById('msg-sorteio').textContent = '';
+}
+
+function copiarGanhadores() {
+  const texto = 'GANHADORES DO SORTEIO\n\n' + ganhadores.map((g,i) => `${i+1}. ${g.nome}`).join('\n');
+  navigator.clipboard.writeText(texto).catch(() => prompt('Copie a lista:', texto));
+}
+
+// QR CODE
+function gerarQRAdmin() {
+  const url = window.location.href.split('#')[0];
+  const el = document.getElementById('qr-canvas-admin');
+  el.innerHTML = '';
+  document.getElementById('qr-url-text').textContent = url;
+  new QRCode(el, { text: url, width: 180, height: 180, colorDark: '#1a1a18', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+}
+
+function copiarURL() {
+  const url = window.location.href.split('#')[0];
+  navigator.clipboard.writeText(url).catch(() => prompt('Copie o link:', url));
+}
+
+// PERSISTÊNCIA
+function salvar() {
+  try { localStorage.setItem('simposio_inscritos', JSON.stringify(inscritos)); } catch(e) {}
+}
+function carregar() {
+  try { const d = localStorage.getItem('simposio_inscritos'); if (d) inscritos = JSON.parse(d); } catch(e) {}
+}
+
+carregar();
+verificarRota();
+</script>
+</body>
+</html>
